@@ -32,13 +32,41 @@ const userSchema = new mongoose.Schema({
     resetPasswordExpires: {
         type: Date,
         required: false
+    },
+    numOfTries: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    accountLogout: {
+        type: Date,
+        required: false
+    },
+    otp: {
+        type: Number,
+        requried: false,
+    },
+    otpLimit:{
+        type: Date,
+        required:false,
+        default:"2020-03-09T14:41:44.075+00:00"
+    },
+    otpRepeat: {
+        type: Date,
+        required:false
     }
+
 })
 
 
-userSchema.methods.generatePasswordReset = function() {
+userSchema.methods.generatePasswordReset = function () {
     this.resetPasswordToken = crypto.randomBytes(20).toString('hex');
     this.resetPasswordExpires = Date.now() + 3600000; //expires in an hour
+};
+
+userSchema.methods.generateOTP = function () {
+    this.otp = Math.floor(Math.random() * 899999 + 100000);
+    this.otpLimit = Date.now() + 30000; //expires in 5 mins
 };
 
 

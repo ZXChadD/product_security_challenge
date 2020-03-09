@@ -16,7 +16,10 @@ html
             .row                       
                 h2(class="text-center") Welcome
                 div(class="blank-form")
-                    form(action="/api/logout", method="post")
+                    form(action="/api/logout", method="post")                        
+                            .form-group
+                                input(type="hidden" name="_csrf" value="<%= csrfToken %>")
+
                             .form-group
                                 button(type="submit" class="btn btn-primary btn-block") Sign out
 

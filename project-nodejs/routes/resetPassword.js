@@ -4,7 +4,9 @@ const sgMail = require('@sendgrid/mail');
 const dotenv = require('dotenv')
 const bcrypt = require('bcrypt')
 
-const {resetPasswordValidation} = require('../validation')
+const {
+    resetPasswordValidation
+} = require('../validation')
 dotenv.config();
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -13,15 +15,19 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 router.post('/forget', (req, res) => {
     let email = req.sanitize(req.body.email)
 
-    User.findOne({ email: email })
-        .then(async (user) => {
-            if (!user) return res.status(401).json({ message: 'The email address ' + req.body.email + ' is not associated with any account. Double-check your email address and try again.' });
+    User.findOne({
+            email: email
+        })
+        .then((user) => {
+            if (!user) return res.status(401).json({
+                message: 'The email address ' + req.body.email + ' is not associated with any account. Double-check your email address and try again.'
+            });
 
             //Generate and set password reset token
             user.generatePasswordReset();
 
             // Save the updated user object
-            await user.save()
+            user.save()
                 .then(user => {
                     // send email
                     let link = "https://" + req.headers.host + "/resetpassword/" + user.resetPasswordToken;
@@ -35,31 +41,50 @@ router.post('/forget', (req, res) => {
                     };
 
                     sgMail.send(mailOptions, (error, result) => {
-                        if (error) return res.status(500).json({ message: "Enable to send email"});
+                        // if (error) return res.status(500).json({
+                        //     message: "Enable to send email"
+                        // });
 
-                        res.status(200).json({ message: 'A reset email has been sent to ' + user.email + '.' });
+                        res.status(200).json({
+                            message: 'A reset email has been sent to ' + user.email + '.'
+                        });
                     });
                 })
-                .catch(err => res.status(500).json({ message: err.message}));
+                .catch(err => res.status(500).json({
+                    message: err.message
+                }));
         })
-        .catch(err => res.status(500).json({ message: err.message }));
+        .catch(err => res.status(500).json({
+            message: err.message
+        }));
 });
 
 // @route POST api/reset
 router.post('/reset', async (req, res) => {
-    await User.findOne({resetPasswordToken: req.body.resetToken, resetPasswordExpires: {$gt: Date.now()}})
+        User.findOne({
+            resetPasswordToken: req.body.resetToken,
+            resetPasswordExpires: {
+                $gt: Date.now()
+            }
+        })
         .then(async (user) => {
-            if (!user) return res.status(401).json({message: 'Password reset token is invalid or has expired.'});
+            if (!user) return res.status(401).json({
+                message: 'Password reset token is invalid or has expired.'
+            });
 
             let password = req.sanitize(req.body.password)
             let confirmPassword = req.sanitize(req.body.confirmPassword)
 
             //Validation
-            const {error} = resetPasswordValidation(req.body);
-            if(error) return res.status(400).send(error.details[0].message)
+            const {
+                error
+            } = resetPasswordValidation(req.body);
+            if (error) return res.status(400).send(error.details[0].message)
 
             //Check if passwords are the same
-            if(password !== confirmPassword) return res.status(400).json({message:"Passwords are different"})
+            if (password !== confirmPassword) return res.status(400).json({
+                message: "Passwords are different"
+            })
 
             //Hash the password
             const salt = await bcrypt.genSalt(10);
@@ -72,7 +97,9 @@ router.post('/reset', async (req, res) => {
 
             // Save
             user.save((err) => {
-                if (err) return res.status(500).json({message: err.message});
+                if (err) return res.status(500).json({
+                    message: err.message
+                });
 
                 // send email
                 const mailOptions = {
@@ -84,9 +111,13 @@ router.post('/reset', async (req, res) => {
                 };
 
                 sgMail.send(mailOptions, (error, result) => {
-                    if (error) return res.status(500).json({message: error.message});
-                
-                    res.status(200).json({message: 'Your password has been updated.'});
+                    if (error) return res.status(500).json({
+                        message: error.message
+                    });
+
+                    res.status(200).json({
+                        message: 'Your password has been updated.'
+                    });
                 });
             });
         });

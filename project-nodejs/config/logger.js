@@ -19,14 +19,23 @@ const logger = createLogger({
             format: format.combine(format.timestamp(), format.json())
         })
     ]
+    // meta: true,
+    // msg: "Request: HTTP {{req.method}} {{req.url}}; Username: {{req.user.preferred_username}}; ipAddress {{req.connection.remoteAddress}}",
+    // requestWhitelist: [
+    //     "url",
+    //     "method",
+    //     "httpVersion",
+    //     "originalUrl",
+    //     "query",
+    //     "body"
+    // ]
 })
 
-// create a stream object with a 'write' function that will be used by `morgan`
-logger.stream = {
-    write: function(message, encoding) {
-      // use the 'info' log level so the output will be picked up by both transports (file and console)
-      logger.info(message);
-    },
-  };
+
 
 module.exports = logger;
+module.exports.stream = {
+    write: function(message, encoding){
+        logger.info(message);
+    }
+};

@@ -24,7 +24,7 @@ html
                             input(type="password" name="password" class="login-password form-control" placeholder="Password" required="required")
                        
                         .form-group
-                            input(type="hidden" name="_csrf" value="${req.csrfToken()}")
+                            input(type="hidden" name="_csrf" value="<%= csrfToken %>")
                             
                         .form-group
                             button(type="submit" class="btn btn-primary btn-block") Sign in

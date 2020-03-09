@@ -7,11 +7,17 @@ const cookierParser = require('cookie-parser')
 const https = require('https');
 const fs = require('fs');
 const morgan = require('morgan');
-const winston = require('winston');
 const logger = require('./config/logger')
 const csurf = require('csurf');
+const csrfCheck = csurf();
 const helmet = require('helmet');
 const expressSanitizer = require('express-sanitizer');
+const rateLimit = require('express-rate-limit');
+
+//Logging
+app.use(morgan("combined", {
+  "stream": logger.stream
+}));
 
 
 app.use(express.json())
@@ -21,18 +27,13 @@ app.use(express.urlencoded());
 app.use(helmet());
 app.use(expressSanitizer());
 
-const csrfMiddleware = csurf({
-  cookie: true
-});
-
-
 //Access cookies
 app.use(cookierParser())
-app.use(csrfMiddleware);
 
 //Import Routes
 const authRoute = require('./routes/auth');
 const webRoute = require('./routes/web');
+const otpAuthRoute = require('./routes/otpAuth');
 const resetPasswordRoute = require('./routes/resetPassword');
 
 //Views
@@ -49,36 +50,35 @@ app.use(express.static(path.join(__dirname, 'node_modules')));
 dotenv.config();
 
 //Connect to DB
-mongoose.connect(process.env.DB_CONNECT,
-	{ useNewUrlParser: true },
-	() => console.log('connected to db!')
+mongoose.connect(process.env.DB_CONNECT, {
+    useNewUrlParser: true
+  },
+  () => console.log('connected to db!')
 );
 
 //Route Middlewares
 app.use('/api', authRoute);
 app.use('/api', resetPasswordRoute);
+app.use('/auth', otpAuthRoute);
 app.use('', webRoute)
 
-//Logging
-app.use(morgan('combined', { stream: logger.stream }));
+//Rate Limiter
+const rateLimiter= rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 24 hrs in milliseconds
+  max: 50,
+  message: 'You have exceeded the number of requests',
+  headers: true,
+});
 
-// Error handler
-app.use(function(err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-  
-    // add this line to include winston logging
-    logger.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-  
-    // render the error page
-    res.status(err.status || 500);
-    res.render('error');
-  });
+app.use(rateLimiter);
 
+app.use(csrfCheck, (req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
 
 https.createServer({
-    key: fs.readFileSync('./key.pem'),
-    cert: fs.readFileSync('./cert.pem'),
-    passphrase: process.env.PP
-}, app).listen(3000, () => logger.info('Server Up and running'));
+  key: fs.readFileSync('./key.pem'),
+  cert: fs.readFileSync('./cert.pem'),
+  passphrase: process.env.PP
+}, app).listen(3000, () => console.log('Server Up and running'));
