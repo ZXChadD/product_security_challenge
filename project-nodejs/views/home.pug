@@ -1,0 +1,23 @@
+doctype html
+html
+    head
+        title Home
+        meta(
+            name="viewport" 
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        )
+        script(src="https://code.jquery.com/jquery-3.4.1.js"   integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="   crossorigin="anonymous")
+        link(rel='stylesheet', href='/stylesheets/style.css')
+        link(rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&display=swap")
+        link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
+        block stylesheets
+    body
+        .container
+            .row                       
+                h2(class="text-center") Welcome
+                div(class="blank-form")
+                    form(action="/api/logout", method="post")
+                            .form-group
+                                button(type="submit" class="btn btn-primary btn-block") Sign out
+
+script(src="/sweetalert2/dist/sweetalert2.all.min.js")
