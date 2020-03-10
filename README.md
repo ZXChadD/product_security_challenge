@@ -1,5 +1,28 @@
 # Instructions
 
+The application can be found at https://zdtestapp.herokuapp.com/
+
+1. [x] Input sanitization and validation
+- Done on both frontend and backend         
+2. [x] Password hashed
+- Used bcrpt and salt
+3. [x] Prevention of timing attacks
+- Rate limiting
+4. [x] Logging
+- Logged all Http requests using winston package
+5. [x] CSRF prevention
+- Used csrf token to verify request 
+6. [] Multi factor authentication
+7. [x] Password reset / forget password mechanism
+- Password reset link will be sent through email
+8. [x] Account lockout
+- After a few unsucessful tries, the user's account will be locked for 20mins
+9. [x] Cookie 
+- Used of JWT authentication token
+10. [x] HTTPS
+11. [x] Known password check
+- User's password will be checked against a list of known passwords
+
 # Zendesk Product Security
 ### The Zendesk Product Security Challenge
 
