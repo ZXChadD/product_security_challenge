@@ -13,6 +13,8 @@ const csrfCheck = csurf();
 const helmet = require('helmet');
 const expressSanitizer = require('express-sanitizer');
 const rateLimit = require('express-rate-limit');
+var sslRedirect = require('heroku-ssl-redirect');
+
 
 //Logging
 app.use(morgan("combined", {
@@ -26,6 +28,8 @@ app.use(express.urlencoded());
 //Security packages
 app.use(helmet());
 app.use(expressSanitizer());
+// enable ssl redirect
+app.use(sslRedirect());
 
 //Access cookies
 app.use(cookierParser())
