@@ -82,4 +82,4 @@ https.createServer({
   key: fs.readFileSync('./key.pem'),
   cert: fs.readFileSync('./cert.pem'),
   passphrase: process.env.PP
-}, app).listen(3000, () => console.log('Server Up and running'));
+}, app).listen(process.env.PORT || 3000, () => console.log('Server Up and running'));
