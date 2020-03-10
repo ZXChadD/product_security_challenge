@@ -8,21 +8,21 @@ module.exports = async function auth(req, res, next) {
     //If token does not exist
     if (!token) return res.status(400).redirect("/login")
 
-    //If token has not been blacklisted 
-    const tokenExists = await Blacklist.findOne({
+    //If token has been blacklisted 
+    const tokenBlacklisted = await Blacklist.findOne({
         token: token
     });
-    if (tokenExists) return res.status(400).redirect("/login")
+    if (tokenBlacklisted) return res.status(400).redirect("/login")
 
     try {
         const payload = jwt.verify(token, process.env.SECRET)
 
         //Check if the token has expired 
         if (Date.now() > payload.expires) {
-            res.status(400).redirect("/login")
+            return res.status(400).redirect("/login")
         }
         next();
     } catch (err) {
-        res.status(400).redirect("/login")
+        return res.status(400).redirect("/login")
     }
 }

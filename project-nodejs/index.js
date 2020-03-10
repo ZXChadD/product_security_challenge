@@ -33,7 +33,6 @@ app.use(cookierParser())
 //Import Routes
 const authRoute = require('./routes/auth');
 const webRoute = require('./routes/web');
-const otpAuthRoute = require('./routes/otpAuth');
 const resetPasswordRoute = require('./routes/resetPassword');
 
 //Views
@@ -59,8 +58,10 @@ mongoose.connect(process.env.DB_CONNECT, {
 //Route Middlewares
 app.use('/api', authRoute);
 app.use('/api', resetPasswordRoute);
-app.use('/auth', otpAuthRoute);
-app.use('', webRoute)
+app.use('', webRoute);
+app.all('*', function(req, res) {
+  res.redirect("/login");
+});
 
 //Rate Limiter
 const rateLimiter= rateLimit({
@@ -70,12 +71,12 @@ const rateLimiter= rateLimit({
   headers: true,
 });
 
-app.use(rateLimiter);
-
 app.use(csrfCheck, (req, res, next) => {
   res.locals.csrfToken = req.csrfToken();
   next();
 });
+
+app.use(rateLimiter);
 
 https.createServer({
   key: fs.readFileSync('./key.pem'),

@@ -1,20 +1,21 @@
 const router = require('express').Router();
 const verify = require('../middleware/verfyToken');
+const afterLogin = require('../middleware/afterLogin');
 const User = require('../model/User');
 
 router.get('/home', verify, (req, res) => {
     res.render("../views/home")
 });
 
-router.get('/login', (req, res) => {
+router.get('/login', afterLogin, (req, res) => {
     res.render("../views/login");
 });
 
-router.get('/register', (req, res) => {
+router.get('/register', afterLogin, (req, res) => {
     res.render("../views/register");
 });
 
-router.get('/forgetpassword', (req, res) => {
+router.get('/forgetpassword', afterLogin, (req, res) => {
     res.render("../views/forgetPassword");
 });
 

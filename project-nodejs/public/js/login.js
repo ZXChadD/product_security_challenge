@@ -30,7 +30,7 @@ function dialogFormSuccess(){
         title: 'Success',
         text: 'Login successful',
         onClose: function(){
-            window.location = ("/auth/otp");
+            window.location = ("/home");
         }
     });
 }

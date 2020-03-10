@@ -79,11 +79,11 @@ router.post('/register', async (req, res) => {
     });
     try {
         const saveUser = await user.save();
-        res.status(200).json({
+        return res.status(200).json({
             message: "Registered Successfully"
         });
     } catch (err) {
-        res.status(400).json({
+        return res.status(400).json({
             message: err
         });
     }
@@ -157,7 +157,11 @@ router.post('/login', async (req, res) => {
         secure: true,
     });
 
-    sendEmail(userExists, res);
+    // sendEmail(userExists, res);
+
+    return res.status(200).json({
+        message: "Login Successfully"
+    });
 })
 
 router.post('/logout', async (req, res) => {
@@ -175,39 +179,41 @@ router.post('/logout', async (req, res) => {
     }
 })
 
-async function sendEmail(user, res) {
-    if (Date.now() > user.otpLimit) {
+// For otp function
 
-        //Generate OTP
-        user.generateOTP();
+// async function sendEmail(user, res) {
+//     if (Date.now() > user.otpLimit) {
 
-        // Save the updated user object
-        await user.save();
+//         //Generate OTP
+//         user.generateOTP();
 
-        const mailOptions = {
-            to: user.email,
-            from: process.env.FROM_EMAIL,
-            subject: "OTP",
-            text: `Hi ${user.name} \n 
-        Here is your otp ${user.otp}. \n\n`
-        };
+//         // Save the updated user object
+//         await user.save();
 
-        sgMail.send(mailOptions, (error, result) => {
-            // if (error) return res.status(500).json({
-            //     message: "Enable to send email"
-            // });
+//         const mailOptions = {
+//             to: user.email,
+//             from: process.env.FROM_EMAIL,
+//             subject: "OTP",
+//             text: `Hi ${user.name} \n 
+//         Here is your otp ${user.otp}. \n\n`
+//         };
 
-            return res.status(200).json({
-                message: 'Otp has been sent to ' + user.email + '.'
-            });
-        });
+//         sgMail.send(mailOptions, (error, result) => {
+//             // if (error) return res.status(500).json({
+//             //     message: "Enable to send email"
+//             // });
 
-    } else {
-        return res.status(500).json({
-            message: "Please login again"
-        });
-    }
+//             return res.status(200).json({
+//                 message: 'Otp has been sent to ' + user.email + '.'
+//             });
+//         });
 
-}
+//     } else {
+//         return res.status(500).json({
+//             message: "Please login again"
+//         });
+//     }
+
+// }
 
 module.exports = router;

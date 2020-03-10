@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
+const bcrpt = require('bcrypt')
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -42,19 +43,19 @@ const userSchema = new mongoose.Schema({
         type: Date,
         required: false
     },
-    otp: {
-        type: Number,
-        requried: false,
-    },
-    otpLimit:{
-        type: Date,
-        required:false,
-        default:"2020-03-09T14:41:44.075+00:00"
-    },
-    otpRepeat: {
-        type: Date,
-        required:false
-    }
+    // otp: {
+    //     type: Number,
+    //     requried: false,
+    // },
+    // otpLimit:{
+    //     type: Date,
+    //     required:false,
+    //     default:"2020-03-09T14:41:44.075+00:00"
+    // },
+    // otpRepeat: {
+    //     type: Date,
+    //     required:false
+    // }
 
 })
 
@@ -64,10 +65,11 @@ userSchema.methods.generatePasswordReset = function () {
     this.resetPasswordExpires = Date.now() + 3600000; //expires in an hour
 };
 
-userSchema.methods.generateOTP = function () {
-    this.otp = Math.floor(Math.random() * 899999 + 100000);
-    this.otpLimit = Date.now() + 30000; //expires in 5 mins
-};
+// userSchema.methods.generateOTP = function () {
+//     // const salt = bcrypt.genSalt(10);
+//     this.otp = Math.floor(Math.random() * 899999 + 100000);
+//     this.otpLimit = Date.now() + 30000; //expires in 5 mins
+// };
 
 
 module.exports = mongoose.model('User', userSchema)
