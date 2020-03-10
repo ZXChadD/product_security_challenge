@@ -78,8 +78,10 @@ app.use(csrfCheck, (req, res, next) => {
 
 app.use(rateLimiter);
 
-https.createServer({
-  key: fs.readFileSync('./key.pem'),
-  cert: fs.readFileSync('./cert.pem'),
-  passphrase: process.env.PP
-}, app).listen(process.env.PORT || 3000, () => console.log('Server Up and running'));
+// https.createServer({
+//   key: fs.readFileSync('./key.pem'),
+//   cert: fs.readFileSync('./cert.pem'),
+//   passphrase: process.env.PP
+// }, app)
+
+app.listen(process.env.PORT || 3000, () => console.log('Server Up and running'));
